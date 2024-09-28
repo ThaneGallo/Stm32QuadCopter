@@ -8,26 +8,33 @@
 #ifndef ICM20948_H_
 #define ICM20948_H_
 
-uint16_t accel_data[3];
-uint16_t gyro_data[3];
-int16_t mag_data[3];
+#include <stdint.h>
 
-#define SPI_BUS			(&hspi1) // ***
-#define UART_BUS		(&huart3) // ***
-
-#define USER_BANK_SEL	(0x7F)
-#define USER_BANK_0		(0x00)
-#define USER_BANK_1		(0x10)
-#define USER_BANK_2		(0x20)
-#define USER_BANK_3		(0x30)
-
-#define PWR_MGMT_1 		(0x06)
-#define PWR_MGMT_2		(0x07)
-#define GYRO_CONFIG_1	(0x01)
+#define SPI_BUS (&hspi1)   // ***
+#define UART_BUS (&huart3) // ***
 
 
-#define CLK_BEST_AVAIL	(0x01)
-#define GYRO_LPF_17HZ 	(0x29)
+#define GYRO_SEL (1 << 0)
+#define ACCEL_SEL (1 << 1)
+#define MAGN_SEL (1 << 2)
+
+#define USER_BANK_SEL (0x7F)
+#define USER_BANK_0 (0x00)
+#define USER_BANK_1 (0x10)
+#define USER_BANK_2 (0x20)
+#define USER_BANK_3 (0x30)
+
+#define PWR_MGMT_1 (0x06)
+#define PWR_MGMT_2 (0x07)
+
+#define GYRO_CONFIG_1 (0x01)
+#define GYRO_CONFIG_2 (0x02)
+
+#define ACCEL_CONFIG_1 (0x14)
+#define ACCEL_CONFIG_2 (0x15)
+
+#define CLK_BEST_AVAIL (0x01)
+#define GYRO_LPF_17HZ (0x29)
 
 // Gyro setup
 // full scale
@@ -58,7 +65,6 @@ int16_t mag_data[3];
 #define ACCEL_AVG_CFG_8 0x01
 #define ACCEL_AVG_CFG_16 0x02
 #define ACCEL_AVG_CFG_32 0x03
-
 
 struct GYRO;
 struct ACCEL;
@@ -104,15 +110,15 @@ typedef struct ICM_20948
 
 } ICM_20948;
 
-void ICM_gyro_config(uint8_t FS_config, uint8_t Avg_config, uint8_t DLPF_config);
-void ICM_accel_config(uint8_t FS_config, uint8_t Avg_config, uint8_t DLPF_config);
-
 void ICM_PowerOn();
-uint8_t ICM_WHOAMI(void);
 void ICM_SelectBank(uint8_t bank);
-void ICM_ReadAccelGyro(struct ICM_20948 *IMU);
-void ICM_ReadMag(struct ICM_20948 *IMU);
-uint16_t ICM_Initialize(void);
+void ICM_ReadAccelGyro(ICM_20948 *IMU);
+void ICM_ReadMag(ICM_20948 *IMU);
+
+void ICM_GyroInit(ICM_20948 *IMU, uint8_t FS_config, uint8_t LPF_config, uint8_t AVG_config);
+void ICM_AccelInit(ICM_20948 *IMU, uint8_t FS_config, uint8_t LPF_config, uint8_t AVG_config);
+void ICM_MagnInit();
+
 void ICM_SelectBank(uint8_t bank);
 void ICM_Disable_I2C(void);
 void ICM_CSHigh(void);
@@ -120,7 +126,6 @@ void ICM_CSLow(void);
 void ICM_SetClock(uint8_t clk);
 void ICM_AccelGyroOff(void);
 void ICM_AccelGyroOn(void);
-void ICM_SetGyroRateLPF(uint8_t rate, uint8_t lpf);
 void ICM_SetGyroLPF(uint8_t lpf);
 
-#endif /* ICM20948_H_ */
+#endif ICM20948_H_
